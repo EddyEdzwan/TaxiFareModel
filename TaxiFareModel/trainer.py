@@ -150,16 +150,16 @@ class Trainer():
         self.mlflow_log_metric('rmse', rmse)
 
         cv_results = cross_validate(self.pipeline, self.X, self.y, cv=5, n_jobs=-1, scoring='neg_root_mean_squared_error')
-
-        cv_score = abs(cv_results['test_score'].mean())
+        cv_rmse = abs(cv_results['test_score'].mean())
+        self.mlflow_log_metric('cv_rmse', cv_rmse)
 
         if kwargs:
             y_pred_val = self.pipeline.predict(kwargs['X_val'])
             val_rmse = compute_rmse(y_pred_val, kwargs['y_val'])
             self.mlflow_log_metric('val_rmse', val_rmse)
-            return {'cv_rmse': cv_score, 'val_rmse':val_rmse, 'rmse': rmse}
+            return {'cv_rmse': cv_rmse, 'val_rmse':val_rmse, 'rmse': rmse}
 
-        return {'cv_rmse': cv_score, 'rmse': rmse}
+        return {'cv_rmse': cv_rmse, 'rmse': rmse}
 
     @memoized_property
     def mlflow_client(self):
